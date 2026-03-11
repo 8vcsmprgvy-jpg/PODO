@@ -82,6 +82,25 @@
   opacity: 1;
 }
 
+.settings-btn {
+  background: transparent;
+  width: 14px;
+  height: 14px;
+}
+
+.settings-btn svg {
+  width: 14px;
+  height: 14px;
+  color: var(--primary-dark);
+  opacity: 0.6;
+  transition: all 0.3s ease;
+}
+
+.settings-btn:hover svg {
+  opacity: 1;
+  transform: rotate(45deg);
+}
+
 .close-btn {
   background: #ff5f56;
 }

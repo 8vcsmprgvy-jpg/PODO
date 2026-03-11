@@ -10,6 +10,66 @@
   --border-radius: 28px;
 }
 
+[data-theme='emerald'] {
+  --primary: #10b981;
+  --primary-light: #34d399;
+  --primary-dark: #059669;
+  --bg-gradient: linear-gradient(135deg, #a7f3d0 0%, #10b981 100%);
+  --text-main: #064e3b;
+}
+
+[data-theme='sunset'] {
+  --primary: #f59e0b;
+  --primary-light: #fbbf24;
+  --primary-dark: #d97706;
+  --bg-gradient: linear-gradient(135deg, #fef3c7 0%, #f59e0b 100%);
+  --text-main: #451a03;
+}
+
+[data-theme='rose'] {
+  --primary: #f43f5e;
+  --primary-light: #fb7185;
+  --primary-dark: #e11d48;
+  --bg-gradient: linear-gradient(135deg, #fecdd3 0%, #f43f5e 100%);
+  --text-main: #4c0519;
+}
+
+[data-theme='midnight'] {
+  --primary: #334155;
+  --primary-light: #475569;
+  --primary-dark: #1e293b;
+  --bg-gradient: linear-gradient(135deg, #94a3b8 0%, #334155 100%);
+  --text-main: #0f172a;
+  --widget-bg: rgba(255, 255, 255, 0.1);
+  --widget-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme='midnight'] .timer-card {
+  color: white;
+}
+
+[data-theme='midnight'] .time {
+  color: white;
+}
+
+[data-theme='midnight'] .timer-label {
+  color: #94a3b8;
+}
+
+[data-theme='midnight'] .preset-btn {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+[data-theme='midnight'] .preset-btn.active {
+  background: #334155;
+}
+
+[data-theme='midnight'] .sound-btn {
+  color: #cbd5e1;
+}
+
+
 * {
   box-sizing: border-box;
   margin: 0;

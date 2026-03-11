@@ -8,6 +8,7 @@ const __dirname = path.dirname(__filename);
 const isDev = process.env.NODE_ENV === 'development';
 
 let mainWindow = null;
+let settingsWindow = null;
 let tray = null;
 
 // Force single instance
@@ -81,9 +82,53 @@ function createWindow() {
 
 // IPC listeners for window controls
 ipcMain.on('window-controls', (event, action) => {
-    if (!mainWindow) return;
     if (action === 'close' || action === 'hide') {
-        mainWindow.hide();
+        const win = BrowserWindow.fromWebContents(event.sender);
+        if (win === mainWindow) {
+            mainWindow.hide();
+        } else {
+            win.close();
+        }
+    }
+});
+
+function createSettingsWindow() {
+    if (settingsWindow) {
+        settingsWindow.focus();
+        return;
+    }
+
+    settingsWindow = new BrowserWindow({
+        width: 350,
+        height: 450,
+        frame: false,
+        backgroundColor: '#1a1040',
+        resizable: false,
+        webPreferences: {
+            nodeIntegration: false,
+            contextIsolation: true,
+            preload: path.join(__dirname, 'preload.js')
+        },
+    });
+
+    const url = isDev
+        ? `${process.env.VITE_DEV_SERVER_URL || 'http://localhost:5173'}#settings`
+        : `file://${path.join(__dirname, '../dist/index.html')}#settings`;
+
+    settingsWindow.loadURL(url);
+
+    settingsWindow.on('closed', () => {
+        settingsWindow = null;
+    });
+}
+
+ipcMain.on('open-settings', () => {
+    createSettingsWindow();
+});
+
+ipcMain.on('update-theme', (event, theme) => {
+    if (mainWindow) {
+        mainWindow.webContents.send('theme-updated', theme);
     }
 });
 

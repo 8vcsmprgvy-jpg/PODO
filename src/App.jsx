@@ -12,6 +12,17 @@ function App() {
   const timerRef = useRef(null);
 
   useEffect(() => {
+    // Load saved theme
+    const savedTheme = localStorage.getItem('pomodore-theme') || 'default';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+
+    // Listen for theme updates from settings window
+    if (window.electronAPI && window.electronAPI.onThemeUpdate) {
+      window.electronAPI.onThemeUpdate((newTheme) => {
+        document.documentElement.setAttribute('data-theme', newTheme);
+      });
+    }
+
     if (isActive && timeLeft > 0) {
       timerRef.current = setInterval(() => {
         setTimeLeft((prev) => prev - 1);
@@ -65,6 +76,12 @@ function App() {
   const handleHide = () => {
     if (window.electronAPI) {
       window.electronAPI.hideWindow();
+    }
+  };
+
+  const handleOpenSettings = () => {
+    if (window.electronAPI && window.electronAPI.openSettings) {
+      window.electronAPI.openSettings();
     }
   };
 
@@ -164,6 +181,12 @@ function App() {
       <div className="titlebar">
         <div style={{ paddingLeft: '24px', fontSize: '0.8rem', fontWeight: 600, color: 'var(--primary-dark)', opacity: 0.7 }}>POMODORE</div>
         <div className="window-controls">
+          <button className="control-btn settings-btn" onClick={handleOpenSettings} title="Settings">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+          </button>
           <button className="control-btn hide-btn" onClick={handleHide} title="Hide (Minimize)"></button>
           <button className="control-btn close-btn" onClick={handleClose} title="Close"></button>
         </div>
