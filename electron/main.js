@@ -39,7 +39,7 @@ function createWindow() {
         frame: false,
         backgroundColor: '#1a1040',
         resizable: true,
-        minWidth: 320,
+        minWidth: 380,
         minHeight: 400,
         skipTaskbar: false,
         webPreferences: {
@@ -103,7 +103,7 @@ ipcMain.on('window-resize', (event, { deltaX, deltaY }) => {
     let newY = bounds.y + deltaY;
 
     // Constrain minimum size (matching the BrowserWindow options)
-    const minWidth = 320;
+    const minWidth = 380;
     const minHeight = 400;
 
     if (newWidth < minWidth) {

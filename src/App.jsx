@@ -3,8 +3,8 @@ import './App.css';
 import playSound from './sound';
 
 function App() {
-  const [timeLeft, setTimeLeft] = useState(16 * 60 + 15); // Default 16:15 for preview
-  const [initialTime, setInitialTime] = useState(16 * 60 + 15);
+  const [timeLeft, setTimeLeft] = useState(25 * 60); // Default 25:00
+  const [initialTime, setInitialTime] = useState(25 * 60);
   const [isActive, setIsActive] = useState(false);
   const [mode, setMode] = useState(null); // '5', '10', '20'
   const [soundType, setSoundType] = useState('chime');
