@@ -4,7 +4,11 @@
   align-items: center;
   gap: 20px;
   animation: slideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-  width: 320px;
+  width: 100%;
+  height: 100%;
+  padding: 40px 20px;
+  box-sizing: border-box;
+  justify-content: center;
 }
 
 @keyframes slideIn {
@@ -17,6 +21,73 @@
     opacity: 1;
     transform: translateY(0) scale(1);
   }
+}
+
+.titlebar {
+  width: 100%;
+  height: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 10px;
+  -webkit-app-region: drag;
+  /* This makes the entire top part draggable */
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.resize-handle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  cursor: nwse-resize;
+  -webkit-app-region: no-drag;
+  z-index: 9999;
+  border-top: 4px solid var(--primary);
+  border-left: 4px solid var(--primary);
+  border-top-left-radius: 4px;
+  opacity: 0.4;
+  transition: opacity 0.2s;
+}
+
+.resize-handle:hover {
+  opacity: 1;
+}
+
+.window-controls {
+  display: flex;
+  gap: 8px;
+  -webkit-app-region: no-drag;
+  /* Buttons must not be draggable to be clickable */
+}
+
+.control-btn {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.control-btn:hover {
+  opacity: 1;
+}
+
+.close-btn {
+  background: #ff5f56;
+}
+
+.hide-btn {
+  background: #ffbd2e;
 }
 
 .presets {
@@ -59,6 +130,7 @@
   box-shadow: var(--widget-shadow), inset 0 0 0 1px rgba(255, 255, 255, 0.5);
   border: 1px solid rgba(255, 255, 255, 0.4);
   width: 100%;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -86,6 +158,28 @@
   font-variant-numeric: tabular-nums;
   letter-spacing: -1.5px;
   margin-bottom: 12px;
+  cursor: pointer;
+}
+
+.time:not(.editing):hover {
+  background: rgba(99, 102, 241, 0.05);
+  border-radius: 8px;
+}
+
+.time-input {
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: var(--primary);
+  line-height: 1;
+  font-family: inherit;
+  border: none;
+  background: transparent;
+  width: 180px;
+  padding: 0;
+  margin-bottom: 12px;
+  outline: none;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -1.5px;
 }
 
 .stop-btn {

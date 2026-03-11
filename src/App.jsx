@@ -4,6 +4,7 @@ import playSound from './sound';
 
 function App() {
   const [timeLeft, setTimeLeft] = useState(16 * 60 + 15); // Default 16:15 for preview
+  const [initialTime, setInitialTime] = useState(16 * 60 + 15);
   const [isActive, setIsActive] = useState(false);
   const [mode, setMode] = useState(null); // '5', '10', '20'
   const [soundType, setSoundType] = useState('chime');
@@ -30,16 +31,14 @@ function App() {
 
   const stopTimer = () => {
     setIsActive(false);
-    if (mode) {
-      setTimeLeft(parseInt(mode) * 60);
-    } else {
-      setTimeLeft(16 * 60 + 15);
-    }
+    setTimeLeft(initialTime);
   };
 
   const setPreset = (minutes) => {
+    const total = minutes * 60;
     setMode(minutes.toString());
-    setTimeLeft(minutes * 60);
+    setTimeLeft(total);
+    setInitialTime(total);
     setIsActive(false);
   };
 
@@ -57,9 +56,120 @@ function App() {
     playSound(nextSound); // Preview sound
   };
 
+  const handleClose = () => {
+    if (window.electronAPI) {
+      window.electronAPI.closeWindow();
+    }
+  };
+
+  const handleHide = () => {
+    if (window.electronAPI) {
+      window.electronAPI.hideWindow();
+    }
+  };
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [editValue, setEditValue] = useState('');
+
+  const handleTimeClick = () => {
+    if (!isActive) {
+      setEditValue(formatTime(timeLeft));
+      setIsEditing(true);
+    }
+  };
+
+  const handleEditChange = (e) => {
+    setEditValue(e.target.value);
+  };
+
+  const handleEditBlur = () => {
+    saveEdit();
+  };
+
+  const handleEditKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      saveEdit();
+    } else if (e.key === 'Escape') {
+      setIsEditing(false);
+    }
+  };
+
+  const saveEdit = () => {
+    const parts = editValue.split(':');
+    let totalSeconds = 0;
+
+    if (parts.length === 2) {
+      const minutes = parseInt(parts[0]) || 0;
+      const seconds = parseInt(parts[1]) || 0;
+      totalSeconds = minutes * 60 + seconds;
+    } else if (parts.length === 1) {
+      let valStr = parts[0].replace(/\D/g, '');
+      if (valStr.length >= 3 || parts[0].startsWith('0')) {
+        valStr = valStr.padStart(4, '0');
+        const minutes = parseInt(valStr.slice(0, valStr.length - 2)) || 0;
+        const seconds = parseInt(valStr.slice(valStr.length - 2)) || 0;
+        totalSeconds = minutes * 60 + seconds;
+      } else {
+        totalSeconds = (parseInt(valStr) || 0) * 60;
+      }
+    }
+
+    if (totalSeconds >= 0) {
+      setTimeLeft(totalSeconds);
+      setInitialTime(totalSeconds);
+      setMode(null); // Clear preset if custom time set
+    }
+    setIsEditing(false);
+  };
+
+  const isResizing = useRef(false);
+  const lastMousePos = useRef({ x: 0, y: 0 });
+
+  const handleResizeMouseDown = (e) => {
+    e.preventDefault();
+    isResizing.current = true;
+    lastMousePos.current = { x: e.screenX, y: e.screenY };
+    window.addEventListener('mousemove', handleResizeMouseMove);
+    window.addEventListener('mouseup', handleResizeMouseUp);
+  };
+
+  const handleResizeMouseMove = (e) => {
+    if (!isResizing.current) return;
+
+    const deltaX = e.screenX - lastMousePos.current.x;
+    const deltaY = e.screenY - lastMousePos.current.y;
+
+    if (deltaX === 0 && deltaY === 0) return;
+
+    if (window.electronAPI && window.electronAPI.resizeWindow) {
+      window.electronAPI.resizeWindow(deltaX, deltaY);
+    }
+
+    lastMousePos.current = { x: e.screenX, y: e.screenY };
+  };
+
+  const handleResizeMouseUp = () => {
+    isResizing.current = false;
+    window.removeEventListener('mousemove', handleResizeMouseMove);
+    window.removeEventListener('mouseup', handleResizeMouseUp);
+  };
+
   return (
     <div className="app-container">
-      <div className="presets">
+      <div
+        className="resize-handle"
+        title="Resize"
+        onMouseDown={handleResizeMouseDown}
+      ></div>
+      <div className="titlebar">
+        <div style={{ paddingLeft: '24px', fontSize: '0.8rem', fontWeight: 600, color: 'var(--primary-dark)', opacity: 0.7 }}>POMODORE</div>
+        <div className="window-controls">
+          <button className="control-btn hide-btn" onClick={handleHide} title="Hide (Minimize)"></button>
+          <button className="control-btn close-btn" onClick={handleClose} title="Close"></button>
+        </div>
+      </div>
+
+      <div className="presets" style={{ marginTop: '20px' }}>
         <button
           className={`preset-btn ${mode === '5' ? 'active' : ''}`}
           onClick={() => setPreset(5)}
@@ -83,7 +193,24 @@ function App() {
       <div className="timer-card">
         <div className="time-section">
           <span className="timer-label">Timer</span>
-          <div className="time">{formatTime(timeLeft)}</div>
+          {isEditing ? (
+            <input
+              autoFocus
+              className="time-input"
+              value={editValue}
+              onChange={handleEditChange}
+              onBlur={handleEditBlur}
+              onKeyDown={handleEditKeyDown}
+            />
+          ) : (
+            <div
+              className={`time ${!isActive ? 'editable' : ''}`}
+              onClick={handleTimeClick}
+              title={!isActive ? "Click to edit" : ""}
+            >
+              {formatTime(timeLeft)}
+            </div>
+          )}
           <button className="stop-btn" onClick={stopTimer}>Stop</button>
         </div>
 
